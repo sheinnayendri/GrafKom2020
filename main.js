@@ -1,30 +1,33 @@
-(function(){
-    var canvas = document.getElementById("canvas_main");
-    var gl = glUtils.checkWebGL(canvas);
+function main() {
+    var canvas = document.getElementById("canvas_main"),
+    gl = canvas.getContext("webgl");
 
-    // console.log(gl);
-    // console.log(gl.getContextAttributes());
+    var vertexShaderCode = 
+    'attribute vec3 coordinates;' +
+    'void main(void) {' +
+        'gl_Position = vec4(coordinates, 1.0);' +
+    '}';
 
-    var vshader =
-        'void main() {\n' +
-        ' gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + 
-        ' gl_PointSize = 10.0;\n' +
-        '}\n';
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderCode);
+    gl.compileShader(vertexShader);
 
-    var fshader =
-        'void main() {\n' +
-        ' gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-        '}\n';
-    
-    var vertexShader = glUtils.getShader(gl, gl.VERTEX_SHADER, vshader);
-    var fragmentShader = glUtils.getShader(gl, gl.FRAGMENT_SHADER, fshader);
-    var program = glUtils.createProgram(gl, vertexShader, fragmentShader);
+    var fragmentShaderCode = 
+    'void main(void) {' +
+        'gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' +
+    '}';
 
-    gl.useProgram(program);
+    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fragmentShaderCode);
+    gl.compileShader(fragmentShader);
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    //gl.colorMask(false, true, true, true); //utk me-non-aktifkan unsur RGB-A, scope-nya cuma di color buffer bit
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+    gl.clearColor(0.35, 0.35, 0.94, 0.9);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.drawArrays(gl.POINTS, 0, 10);
-})();
+    gl.viewPort(0, 0, gl.canvas.width, gl.canvas.height);
+}
